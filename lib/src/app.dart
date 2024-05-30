@@ -7,7 +7,7 @@ import 'package:store_molino_diamante/src/routes/routes.dart';
 
 class MyApp extends StatefulWidget {
   final bool isConnected;
-  final User user;
+  final User? user;
   const MyApp({super.key, required this.isConnected, required this.user});
 
   @override
@@ -45,8 +45,8 @@ class MyAppState extends State<MyApp> {
     String initialWidget = '';
 
     if (widget.isConnected) {
-      if (widget.user.accessToken != null) {
-        initialWidget = RoutesClass.getLogin();
+      if (widget.user?.accessToken != null) {
+        initialWidget = RoutesClass.getHome();
       } else {
         initialWidget = RoutesClass.getLogin();
       }
@@ -55,10 +55,6 @@ class MyAppState extends State<MyApp> {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Store Molino Diamante',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-            .copyWith(secondary: Colors.black),
-      ),
       initialRoute: initialWidget,
       getPages: RoutesClass.routes,
       navigatorKey: Get.key,

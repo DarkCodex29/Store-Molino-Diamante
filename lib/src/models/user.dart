@@ -1,95 +1,73 @@
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:store_molino_diamante/src/routes/routes.dart';
 
 class User extends GetxController {
-  String? accessToken;
-  String? refreshToken;
-  String? email;
-  String? name;
-  String? lastName;
-  String? phone;
-  String? address;
-  String? city;
-  String? state;
-  String? country;
-  String? postalCode;
-  String? role;
-  String? status;
-  String? createdAt;
-  String? updatedAt;
+  String accessToken;
+  String email;
+  String name;
+  String lastName;
+  String phone;
+  int role;
+  int status;
+  Timestamp createdAt;
+  Timestamp updatedAt;
 
   User({
-    this.accessToken,
-    this.refreshToken,
-    this.email,
-    this.name,
-    this.lastName,
-    this.phone,
-    this.address,
-    this.city,
-    this.state,
-    this.country,
-    this.postalCode,
-    this.role,
-    this.status,
-    this.createdAt,
-    this.updatedAt,
+    required this.accessToken,
+    required this.email,
+    required this.name,
+    required this.lastName,
+    required this.phone,
+    required this.role,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  User.fromJson(Map<String, dynamic> json) {
-    accessToken = json['accessToken'];
-    refreshToken = json['refreshToken'];
-    email = json['email'];
-    name = json['name'];
-    lastName = json['lastName'];
-    phone = json['phone'];
-    address = json['address'];
-    city = json['city'];
-    state = json['state'];
-    country = json['country'];
-    postalCode = json['postalCode'];
-    role = json['role'];
-    status = json['status'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        accessToken: json['accessToken'],
+        email: json['email'],
+        name: json['name'],
+        lastName: json['lastName'],
+        phone: json['phone'],
+        role: json['role'],
+        status: json['status'],
+        createdAt: json['createdAt'],
+        updatedAt: json['updatedAt'],
+      );
+
+  Map<String, dynamic> toJson() => {
+        'accessToken': accessToken,
+        'email': email,
+        'name': name,
+        'lastName': lastName,
+        'phone': phone,
+        'role': role,
+        'status': status,
+        'createdAt': createdAt,
+        'updatedAt': updatedAt,
+      };
+
+  static final _user = GetStorage();
+
+  static void saveUser(User user) {
+    _user.write('user', json.encode(user.toJson()));
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['accessToken'] = accessToken;
-    data['refreshToken'] = refreshToken;
-    data['email'] = email;
-    data['name'] = name;
-    data['lastName'] = lastName;
-    data['phone'] = phone;
-    data['address'] = address;
-    data['city'] = city;
-    data['state'] = state;
-    data['country'] = country;
-    data['postalCode'] = postalCode;
-    data['role'] = role;
-    data['status'] = status;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    return data;
+  static User? getUser() {
+    String? userJson = _user.read('user');
+    if (userJson != null) {
+      return User.fromJson(json.decode(userJson));
+    }
+    return null;
   }
 
-  static User getUser() {
-    return User(
-      accessToken: 'accessToken',
-      refreshToken: 'refreshToken',
-      email: 'email',
-      name: 'name',
-      lastName: 'lastName',
-      phone: 'phone',
-      address: 'address',
-      city: 'city',
-      state: 'state',
-      country: 'country',
-      postalCode: 'postalCode',
-      role: 'role',
-      status: 'status',
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt',
-    );
+  static void removeUser() => _user.remove('user');
+  static void logout() {
+    removeUser();
+    Get.offAllNamed(RoutesClass.getLogin());
   }
 }

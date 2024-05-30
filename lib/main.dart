@@ -35,6 +35,6 @@ Future<void> main() async {
       connectivityResult.contains(ConnectivityResult.wifi));
 
   // USER
-  User user = User.getUser();
+  User? user = User.getUser();
   runApp(MyApp(isConnected: isConnected, user: user));
 }
