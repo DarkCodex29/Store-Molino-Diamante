@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "122267568289",
+    "project_id": "store-molino-diamante",
+    "storage_bucket": "store-molino-diamante.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122267568289:android:748ad750dd0b28f5ee48e0",
+        "android_client_info": {
+          "package_name": "one.store.molino.diamante"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuG-uLoE4QIKNKpLJlJdch-kjSJ-8kST4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
