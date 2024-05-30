@@ -1,5 +1,5 @@
 # Miscellaneous
-*.firebase.json
+firebase.json
 *.class
 *.log
 *.pyc
