@@ -17,10 +17,10 @@ class Buy {
 
   factory Buy.fromJson(Map<String, dynamic> json) {
     return Buy(
-      id: json['id'],
-      productId: json['productId'],
-      quantity: json['quantity'],
-      cost: json['cost'],
+      id: json['id'] ?? '',
+      productId: json['productId'] ?? 'Producto desconocido',
+      quantity: json['quantity'] ?? 0,
+      cost: json['cost'] ?? 0.0,
       date: DateTime.parse(json['date']),
     );
   }

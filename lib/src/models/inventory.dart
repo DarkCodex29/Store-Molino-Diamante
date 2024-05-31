@@ -13,9 +13,9 @@ class Inventory {
 
   factory Inventory.fromJson(Map<String, dynamic> json) {
     return Inventory(
-      id: json['id'],
-      productId: json['productId'],
-      quantity: json['quantity'],
+      id: json['id'] ?? '',
+      productId: json['productId'] ?? 'Producto desconocido',
+      quantity: json['quantity'] ?? 0,
     );
   }
 

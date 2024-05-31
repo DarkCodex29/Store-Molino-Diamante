@@ -44,7 +44,6 @@ class AuthController extends GetxController {
           isLoggedIn(true);
           Get.offNamed(RoutesClass.getHome());
         } else {
-          // Handle the case where user is not found in Firestore
           Get.snackbar('Error', 'User not found in Firestore',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: Colors.red,
@@ -64,6 +63,7 @@ class AuthController extends GetxController {
   Future<void> register() async {
     try {
       isLoading(true);
+      /*
       List<String> signInMethods =
           await _auth.fetchSignInMethodsForEmail(registerEmail.text.trim());
       if (signInMethods.isNotEmpty) {
@@ -72,8 +72,9 @@ class AuthController extends GetxController {
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
             colorText: Colors.white);
+        isLoading(false);
         return;
-      }
+      }*/
       firebase_auth.UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: registerEmail.text.trim(),

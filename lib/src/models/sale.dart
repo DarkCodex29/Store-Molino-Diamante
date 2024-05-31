@@ -17,10 +17,10 @@ class Sale {
 
   factory Sale.fromJson(Map<String, dynamic> json) {
     return Sale(
-      id: json['id'],
-      productId: json['productId'],
-      quantity: json['quantity'],
-      price: json['price'],
+      id: json['id'] ?? '',
+      productId: json['productId'] ?? 'Producto desconocido',
+      quantity: json['quantity'] ?? 0,
+      price: json['price'] ?? 0.0,
       date: DateTime.parse(json['date']),
     );
   }
@@ -65,9 +65,7 @@ class Sale {
         .collection('sales')
         .snapshots()
         .map((query) {
-      return query.docs
-          .map((doc) => Sale.fromJson(doc.data()))
-          .toList();
+      return query.docs.map((doc) => Sale.fromJson(doc.data())).toList();
     });
   }
 }

@@ -38,8 +38,12 @@ class AppUser {
         phone: json['phone'],
         role: json['role'],
         status: json['status'],
-        createdAt: (json['createdAt'] as Timestamp).toDate(),
-        updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+        createdAt: json['createdAt'] is Timestamp
+            ? (json['createdAt'] as Timestamp).toDate()
+            : DateTime.parse(json['createdAt']),
+        updatedAt: json['updatedAt'] is Timestamp
+            ? (json['updatedAt'] as Timestamp).toDate()
+            : DateTime.parse(json['updatedAt']),
       );
 
   Map<String, dynamic> toJson() => {
@@ -79,7 +83,7 @@ class AppUser {
 
   // Firestore functionality
   static final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection('user');
+      FirebaseFirestore.instance.collection('users');
 
   Future<void> saveToFirestore() async {
     final docRef = userCollection.doc(id.isEmpty ? null : id);

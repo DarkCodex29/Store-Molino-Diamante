@@ -19,10 +19,10 @@ class RoutesClass {
   static String getSales() => sales;
 
   static List<GetPage> routes = [
-    GetPage(name: auth, page: () => AuthPage()),
-    GetPage(name: home, page: () => HomePage()),
-    GetPage(name: invetory, page: () => InventoryPage()),
-    GetPage(name: products, page: () => ProductsPage()),
-    GetPage(name: sales, page: () => SalesPage()),
+    GetPage(name: auth, page: () => const AuthPage()),
+    GetPage(name: home, page: () => const HomePage()),
+    GetPage(name: invetory, page: () => const InventoryPage()),
+    GetPage(name: products, page: () => const ProductsPage()),
+    GetPage(name: sales, page: () => const SalesPage()),
   ];
 }
