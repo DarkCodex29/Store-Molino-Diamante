@@ -77,7 +77,6 @@ class BuysPage extends StatelessWidget {
     String selectedSupplierId =
         controller.suppliers.isNotEmpty ? controller.suppliers.first.id : '';
     List<BuyDetail> details = [];
-    double totalCost = 0.0;
 
     showDialog(
       context: context,
@@ -86,6 +85,7 @@ class BuysPage extends StatelessWidget {
           builder: (context, setState) {
             void addDetail() {
               details.add(BuyDetail(
+                id: '',
                 productId: controller.products.first.id,
                 quantity: 1,
                 unitCost: controller.products.first.price,
@@ -106,66 +106,104 @@ class BuysPage extends StatelessWidget {
 
             return AlertDialog(
               title: const Text('Agregar Compra'),
-              content: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(labelText: 'Proveedor'),
-                      value: selectedSupplierId,
-                      onChanged: (value) {
-                        selectedSupplierId = value!;
-                      },
-                      items: controller.suppliers.map((Supplier supplier) {
-                        return DropdownMenuItem<String>(
-                          value: supplier.id,
-                          child: Text(supplier.name),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: addDetail,
-                      child: const Text('Agregar Producto'),
-                    ),
-                    const SizedBox(height: 10),
-                    Column(
-                      children: details.asMap().entries.map((entry) {
-                        int index = entry.key;
-                        BuyDetail detail = entry.value;
-                        final product = controller.products.firstWhere(
-                          (product) => product.id == detail.productId,
-                          orElse: () => Product(
-                            id: '',
-                            name: 'Producto desconocido',
-                            barcode: '',
-                            price: 0.0,
-                            stock: 0,
-                          ),
-                        );
-                        return Card(
-                          child: ListTile(
-                            title: Text(product.name),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Cantidad: ${detail.quantity}'),
-                                Text('Costo unitario: S/. ${detail.unitCost}'),
-                                Text('Costo total: S/. ${detail.totalCost}'),
-                              ],
+              content: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      DropdownButtonFormField<String>(
+                        decoration:
+                            const InputDecoration(labelText: 'Proveedor'),
+                        value: selectedSupplierId,
+                        onChanged: (value) {
+                          selectedSupplierId = value!;
+                        },
+                        items: controller.suppliers.map((Supplier supplier) {
+                          return DropdownMenuItem<String>(
+                            value: supplier.id,
+                            child: Text(supplier.name),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: addDetail,
+                        child: const Text('Agregar Producto'),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: details.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          BuyDetail detail = entry.value;
+                          return Card(
+                            child: ListTile(
+                              title: DropdownButtonFormField<String>(
+                                decoration: const InputDecoration(
+                                    labelText: 'Producto'),
+                                value: detail.productId,
+                                onChanged: (value) {
+                                  Product selectedProduct = controller.products
+                                      .firstWhere(
+                                          (product) => product.id == value);
+                                  detail.productId = value!;
+                                  detail.unitCost = selectedProduct.price;
+                                  detail.totalCost =
+                                      selectedProduct.price * detail.quantity;
+                                  updateDetail(index, detail);
+                                },
+                                items:
+                                    controller.products.map((Product product) {
+                                  return DropdownMenuItem<String>(
+                                    value: product.id,
+                                    child: Text(product.name),
+                                  );
+                                }).toList(),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextFormField(
+                                    initialValue: detail.quantity.toString(),
+                                    decoration: const InputDecoration(
+                                        labelText: 'Cantidad'),
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      detail.quantity =
+                                          int.tryParse(value) ?? 1;
+                                      detail.totalCost =
+                                          detail.unitCost * detail.quantity;
+                                      updateDetail(index, detail);
+                                    },
+                                  ),
+                                  TextFormField(
+                                    initialValue: detail.unitCost.toString(),
+                                    decoration: const InputDecoration(
+                                        labelText: 'Costo Unitario'),
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      detail.unitCost =
+                                          double.tryParse(value) ?? 0.0;
+                                      detail.totalCost =
+                                          detail.unitCost * detail.quantity;
+                                      updateDetail(index, detail);
+                                    },
+                                  ),
+                                  Text('Costo total: S/. ${detail.totalCost}'),
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  removeDetail(index);
+                                },
+                              ),
                             ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                removeDetail(index);
-                              },
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               actions: <Widget>[
@@ -179,7 +217,7 @@ class BuysPage extends StatelessWidget {
                   child: const Text('Guardar'),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      totalCost = details.fold(
+                      double totalCost = details.fold(
                           0.0, (sum, detail) => sum + detail.totalCost);
                       Buy newBuy = Buy(
                         id: '',
