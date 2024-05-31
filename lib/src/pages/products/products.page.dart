@@ -23,7 +23,10 @@ class ProductsPage extends StatelessWidget {
           itemCount: controller.products.length,
           itemBuilder: (context, index) {
             final product = controller.products[index];
-            final supplierName = controller.getSupplierName(product.supplier);
+            final supplierNames = product.suppliersInfo
+                .map((supplierInfo) =>
+                    '${controller.getSupplierName(supplierInfo.supplierId)}: ${supplierInfo.quantity} unidades, Precio: S/. ${supplierInfo.purchasePrice.toStringAsFixed(2)}')
+                .join('\n');
             return ExpansionTile(
               title: Text(product.name),
               subtitle: Text('Stock: ${product.stock}'),
@@ -36,7 +39,8 @@ class ProductsPage extends StatelessWidget {
                       Text('Precio: S/. ${product.price.toStringAsFixed(2)}'),
                 ),
                 ListTile(
-                  title: Text('Proveedor: $supplierName'),
+                  title: Text('Proveedores:'),
+                  subtitle: Text(supplierNames),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete),
@@ -65,6 +69,7 @@ class ProductsPage extends StatelessWidget {
     final barcodeController = TextEditingController();
     final priceController = TextEditingController();
     final stockController = TextEditingController();
+    final purchasePriceController = TextEditingController();
     String selectedSupplierId =
         controller.suppliers.isNotEmpty ? controller.suppliers.first.id : '';
 
@@ -87,12 +92,19 @@ class ProductsPage extends StatelessWidget {
                 ),
                 TextField(
                   controller: priceController,
-                  decoration: const InputDecoration(labelText: 'Precio'),
+                  decoration:
+                      const InputDecoration(labelText: 'Precio de venta'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
                   controller: stockController,
                   decoration: const InputDecoration(labelText: 'Stock'),
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: purchasePriceController,
+                  decoration:
+                      const InputDecoration(labelText: 'Precio de compra'),
                   keyboardType: TextInputType.number,
                 ),
                 DropdownButtonFormField<String>(
@@ -126,7 +138,14 @@ class ProductsPage extends StatelessWidget {
                   barcode: barcodeController.text,
                   price: double.tryParse(priceController.text) ?? 0.0,
                   stock: int.tryParse(stockController.text) ?? 0,
-                  supplier: selectedSupplierId,
+                  suppliersInfo: [
+                    SupplierInfo(
+                      supplierId: selectedSupplierId,
+                      quantity: int.tryParse(stockController.text) ?? 0,
+                      purchasePrice:
+                          double.tryParse(purchasePriceController.text) ?? 0.0,
+                    ),
+                  ],
                 );
                 controller.addProduct(product);
                 Navigator.of(context).pop();

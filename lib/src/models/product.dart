@@ -1,5 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+class SupplierInfo {
+  String supplierId;
+  int quantity;
+  double purchasePrice;
+
+  SupplierInfo({
+    required this.supplierId,
+    required this.quantity,
+    required this.purchasePrice,
+  });
+
+  factory SupplierInfo.fromJson(Map<String, dynamic> json) {
+    return SupplierInfo(
+      supplierId: json['supplierId'] ?? '',
+      quantity: json['quantity'] ?? 0,
+      purchasePrice: json['purchasePrice'] != null
+          ? (json['purchasePrice'] as num).toDouble()
+          : 0.0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'supplierId': supplierId,
+      'quantity': quantity,
+      'purchasePrice': purchasePrice,
+    };
+  }
+}
+
 class Product {
   String id;
   String name;
@@ -9,12 +39,12 @@ class Product {
   int stock;
   String description;
   String category;
-  String supplier;
   String imageURL;
   double discount;
   String status;
   DateTime createdAt;
   DateTime updatedAt;
+  List<SupplierInfo> suppliersInfo;
 
   Product({
     required this.id,
@@ -25,14 +55,15 @@ class Product {
     required this.stock,
     this.description = '',
     this.category = '',
-    this.supplier = '',
     this.imageURL = '',
     this.discount = 0.0,
     this.status = 'active',
     DateTime? createdAt,
     DateTime? updatedAt,
+    List<SupplierInfo>? suppliersInfo,
   })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+        updatedAt = updatedAt ?? DateTime.now(),
+        suppliersInfo = suppliersInfo ?? [];
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -44,10 +75,8 @@ class Product {
       stock: json['stock'] ?? 0,
       description: json['description'] ?? '',
       category: json['category'] ?? '',
-      supplier: json['supplier'] ?? '',
       imageURL: json['imageURL'] ?? '',
-      discount:
-          json['discount'] != null ? (json['discount'] as num).toDouble() : 0.0,
+      discount: json['discount'] != null ? (json['discount'] as num).toDouble() : 0.0,
       status: json['status'] ?? 'active',
       createdAt: (json['createdAt'] != null)
           ? (json['createdAt'] as Timestamp).toDate()
@@ -55,6 +84,11 @@ class Product {
       updatedAt: (json['updatedAt'] != null)
           ? (json['updatedAt'] as Timestamp).toDate()
           : DateTime.now(),
+      suppliersInfo: json['suppliersInfo'] != null
+          ? (json['suppliersInfo'] as List)
+              .map((supplierInfoJson) => SupplierInfo.fromJson(supplierInfoJson))
+              .toList()
+          : [],
     );
   }
 
@@ -68,12 +102,12 @@ class Product {
       'stock': stock,
       'description': description,
       'category': category,
-      'supplier': supplier,
       'imageURL': imageURL,
       'discount': discount,
       'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'suppliersInfo': suppliersInfo.map((supplierInfo) => supplierInfo.toJson()).toList(),
     };
   }
 

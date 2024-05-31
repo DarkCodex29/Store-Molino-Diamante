@@ -30,13 +30,14 @@ class ProductsController extends GetxController {
     final supplier = suppliers.firstWhere(
       (supplier) => supplier.id == id,
       orElse: () => Supplier(
-          id: id,
-          name: 'Proveedor desconocido',
-          contact: '',
-          email: '',
-          address: '',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now()),
+        id: id,
+        name: 'Proveedor desconocido',
+        contact: '',
+        email: '',
+        address: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
     );
     return supplier.name;
   }
@@ -46,7 +47,18 @@ class ProductsController extends GetxController {
     final existingProduct =
         products.firstWhereOrNull((p) => p.barcode == product.barcode);
     if (existingProduct != null) {
+      // Update stock and add supplier info if not already present
       existingProduct.stock += product.stock;
+      final existingSupplier = existingProduct.suppliersInfo.firstWhereOrNull(
+        (s) => s.supplierId == product.suppliersInfo.first.supplierId,
+      );
+      if (existingSupplier != null) {
+        existingSupplier.quantity += product.suppliersInfo.first.quantity;
+        existingSupplier.purchasePrice =
+            product.suppliersInfo.first.purchasePrice;
+      } else {
+        existingProduct.suppliersInfo.add(product.suppliersInfo.first);
+      }
       await Product.updateProduct(existingProduct.id, existingProduct);
     } else {
       await Product.addProduct(product);
