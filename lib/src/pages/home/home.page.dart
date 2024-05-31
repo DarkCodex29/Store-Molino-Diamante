@@ -5,7 +5,8 @@ import 'package:store_molino_diamante/src/pages/inventory/inventory.page.dart';
 import 'package:store_molino_diamante/src/pages/products/products.page.dart';
 import 'package:store_molino_diamante/src/pages/sales/sales.page.dart';
 import 'package:store_molino_diamante/src/pages/buys/buys.page.dart';
-import 'package:store_molino_diamante/src/widgets/custom.appbar.dart'; // Importa la página de compras
+import 'package:store_molino_diamante/src/pages/suppliers/supplier.page.dart';
+import 'package:store_molino_diamante/src/widgets/custom.appbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,6 +24,7 @@ class HomePageState extends State<HomePage> {
     const ProductsPage(),
     const SalesPage(),
     const BuysPage(),
+    const SuppliersPage(), 
   ];
 
   void _onItemTapped(int index) {
@@ -87,6 +89,13 @@ class HomePageState extends State<HomePage> {
                   color: Colors.white,
                 ),
                 label: 'Compras',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                ),
+                label: 'Proveedores',
               ),
             ],
             currentIndex: _selectedIndex,

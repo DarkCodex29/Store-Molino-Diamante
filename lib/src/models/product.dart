@@ -49,8 +49,12 @@ class Product {
       discount:
           json['discount'] != null ? (json['discount'] as num).toDouble() : 0.0,
       status: json['status'] ?? 'active',
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
-      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+      createdAt: (json['createdAt'] != null)
+          ? (json['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      updatedAt: (json['updatedAt'] != null)
+          ? (json['updatedAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -68,8 +72,8 @@ class Product {
       'imageURL': imageURL,
       'discount': discount,
       'status': status,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 

@@ -1,43 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:store_molino_diamante/src/models/detail.buy.dart';
 
 class Buy {
   String id;
-  String productId;
-  String provider;
-  int quantity;
-  double cost;
+  String supplierId;
+  double totalCost;
   DateTime date;
+  List<BuyDetail> details;
 
   Buy({
     required this.id,
-    required this.productId,
-    required this.provider,
-    required this.quantity,
-    required this.cost,
+    required this.supplierId,
+    required this.totalCost,
     required this.date,
+    required this.details,
   });
 
   factory Buy.fromJson(Map<String, dynamic> json) {
     return Buy(
       id: json['id'] ?? '',
-      productId: json['productId'] ?? 'Producto desconocido',
-      provider: json['provider'] ?? 'Proveedor desconocido',
-      quantity: json['quantity'] ?? 0,
-      cost: json['cost'] != null ? (json['cost'] as num).toDouble() : 0.0,
+      supplierId: json['supplierId'] ?? 'Proveedor desconocido',
+      totalCost: json['totalCost'] != null
+          ? (json['totalCost'] as num).toDouble()
+          : 0.0,
       date: (json['date'] != null)
           ? (json['date'] as Timestamp).toDate()
           : DateTime.now(),
+      details: (json['details'] != null)
+          ? (json['details'] as List<dynamic>)
+              .map((detail) => BuyDetail.fromJson(detail))
+              .toList()
+          : [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'productId': productId,
-      'provider': provider,
-      'quantity': quantity,
-      'cost': cost,
+      'supplierId': supplierId,
+      'totalCost': totalCost,
       'date': Timestamp.fromDate(date),
+      'details': details.map((detail) => detail.toJson()).toList(),
     };
   }
 

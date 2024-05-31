@@ -20,8 +20,12 @@ class Inventory {
       id: json['id'] ?? '',
       productId: json['productId'] ?? 'Producto desconocido',
       quantity: json['quantity'] ?? 0,
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
-      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+      createdAt: (json['createdAt'] != null)
+          ? (json['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      updatedAt: (json['updatedAt'] != null)
+          ? (json['updatedAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -44,7 +48,6 @@ class Inventory {
   }
 
   static Future<void> updateInventory(String id, Inventory inventory) async {
-    inventory.updatedAt = DateTime.now();
     await FirebaseFirestore.instance
         .collection('inventories')
         .doc(id)
