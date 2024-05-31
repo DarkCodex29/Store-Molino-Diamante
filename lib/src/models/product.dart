@@ -86,6 +86,7 @@ class Product {
   }
 
   static Future<void> updateProduct(String id, Product product) async {
+    product.updatedAt = DateTime.now();
     await FirebaseFirestore.instance
         .collection('products')
         .doc(id)
@@ -111,6 +112,22 @@ class Product {
         .snapshots()
         .map((query) {
       return query.docs.map((doc) => Product.fromJson(doc.data())).toList();
+    });
+  }
+
+  // Method to update the stock
+  static Future<void> updateStock(String productId, int quantity) async {
+    DocumentReference docRef =
+        FirebaseFirestore.instance.collection('products').doc(productId);
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(docRef);
+      if (!snapshot.exists) {
+        throw Exception("Product does not exist!");
+      }
+      int newStock =
+          (snapshot.data() as Map<String, dynamic>)['stock'] + quantity;
+      transaction.update(docRef,
+          {'stock': newStock, 'updatedAt': Timestamp.fromDate(DateTime.now())});
     });
   }
 }

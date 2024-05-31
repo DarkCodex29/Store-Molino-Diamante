@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:store_molino_diamante/src/models/detail.buy.dart';
+import 'package:store_molino_diamante/src/models/product.dart';
+import 'detail.buy.dart';
 
 class Buy {
   String id;
@@ -19,18 +20,16 @@ class Buy {
   factory Buy.fromJson(Map<String, dynamic> json) {
     return Buy(
       id: json['id'] ?? '',
-      supplierId: json['supplierId'] ?? 'Proveedor desconocido',
+      supplierId: json['supplierId'] ?? '',
       totalCost: json['totalCost'] != null
           ? (json['totalCost'] as num).toDouble()
           : 0.0,
       date: (json['date'] != null)
           ? (json['date'] as Timestamp).toDate()
           : DateTime.now(),
-      details: (json['details'] != null)
-          ? (json['details'] as List<dynamic>)
-              .map((detail) => BuyDetail.fromJson(detail))
-              .toList()
-          : [],
+      details: (json['details'] as List<dynamic>)
+          .map((detail) => BuyDetail.fromJson(detail as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -49,6 +48,12 @@ class Buy {
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('buys').add(buy.toJson());
     await docRef.update({'id': docRef.id});
+    for (var detail in buy.details) {
+      await detail.addBuyDetail();
+    }
+    for (var detail in buy.details) {
+      Product.updateStock(detail.productId, detail.quantity);
+    }
   }
 
   static Future<void> updateBuy(String id, Buy buy) async {

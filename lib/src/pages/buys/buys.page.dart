@@ -86,6 +86,7 @@ class BuysPage extends StatelessWidget {
             void addDetail() {
               details.add(BuyDetail(
                 id: '',
+                buyId: '',
                 productId: controller.products.first.id,
                 quantity: 1,
                 unitCost: controller.products.first.price,

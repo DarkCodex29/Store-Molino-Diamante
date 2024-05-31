@@ -23,15 +23,28 @@ class ProductsPage extends StatelessWidget {
           itemCount: controller.products.length,
           itemBuilder: (context, index) {
             final product = controller.products[index];
-            return ListTile(
+            final supplierName = controller.getSupplierName(product.supplier);
+            return ExpansionTile(
               title: Text(product.name),
               subtitle: Text('Stock: ${product.stock}'),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  controller.deleteProduct(product.id);
-                },
-              ),
+              children: [
+                ListTile(
+                  title: Text('Código de Barras: ${product.barcode}'),
+                ),
+                ListTile(
+                  title:
+                      Text('Precio: S/. ${product.price.toStringAsFixed(2)}'),
+                ),
+                ListTile(
+                  title: Text('Proveedor: $supplierName'),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    controller.deleteProduct(product.id);
+                  },
+                ),
+              ],
             );
           },
         );
@@ -52,6 +65,8 @@ class ProductsPage extends StatelessWidget {
     final barcodeController = TextEditingController();
     final priceController = TextEditingController();
     final stockController = TextEditingController();
+    String selectedSupplierId =
+        controller.suppliers.isNotEmpty ? controller.suppliers.first.id : '';
 
     showDialog(
       context: context,
@@ -80,6 +95,19 @@ class ProductsPage extends StatelessWidget {
                   decoration: const InputDecoration(labelText: 'Stock'),
                   keyboardType: TextInputType.number,
                 ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Proveedor'),
+                  value: selectedSupplierId,
+                  onChanged: (value) {
+                    selectedSupplierId = value!;
+                  },
+                  items: controller.suppliers.map((supplier) {
+                    return DropdownMenuItem<String>(
+                      value: supplier.id,
+                      child: Text(supplier.name),
+                    );
+                  }).toList(),
+                ),
               ],
             ),
           ),
@@ -98,6 +126,7 @@ class ProductsPage extends StatelessWidget {
                   barcode: barcodeController.text,
                   price: double.tryParse(priceController.text) ?? 0.0,
                   stock: int.tryParse(stockController.text) ?? 0,
+                  supplier: selectedSupplierId,
                 );
                 controller.addProduct(product);
                 Navigator.of(context).pop();

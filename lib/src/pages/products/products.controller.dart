@@ -1,14 +1,17 @@
 import 'package:get/get.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
+import 'package:store_molino_diamante/src/models/supplier.dart';
 
 class ProductsController extends GetxController {
   var products = <Product>[].obs;
+  var suppliers = <Supplier>[].obs;
   var isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     fetchProducts();
+    fetchSuppliers();
   }
 
   void fetchProducts() async {
@@ -17,12 +20,37 @@ class ProductsController extends GetxController {
     isLoading(false);
   }
 
-  void addProduct(Product product) async {
-    await Product.addProduct(product);
+  void fetchSuppliers() async {
+    isLoading(true);
+    suppliers.bindStream(Supplier.getSuppliers());
+    isLoading(false);
   }
 
-  void updateProduct(String id, Product product) async {
-    await Product.updateProduct(id, product);
+  String getSupplierName(String id) {
+    final supplier = suppliers.firstWhere(
+      (supplier) => supplier.id == id,
+      orElse: () => Supplier(
+          id: id,
+          name: 'Proveedor desconocido',
+          contact: '',
+          email: '',
+          address: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now()),
+    );
+    return supplier.name;
+  }
+
+  void addProduct(Product product) async {
+    // Check if product already exists
+    final existingProduct =
+        products.firstWhereOrNull((p) => p.barcode == product.barcode);
+    if (existingProduct != null) {
+      existingProduct.stock += product.stock;
+      await Product.updateProduct(existingProduct.id, existingProduct);
+    } else {
+      await Product.addProduct(product);
+    }
   }
 
   void deleteProduct(String id) async {
