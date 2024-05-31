@@ -6,7 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:store_molino_diamante/src/app.dart';
-import 'package:store_molino_diamante/src/models/user.dart';
+import 'package:store_molino_diamante/src/models/app.user.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +35,6 @@ Future<void> main() async {
       connectivityResult.contains(ConnectivityResult.wifi));
 
   // USER
-  User? user = User.getUser();
+  AppUser? user = AppUser.getUser();
   runApp(MyApp(isConnected: isConnected, user: user));
 }

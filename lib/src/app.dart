@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_molino_diamante/src/models/user.dart';
+import 'package:store_molino_diamante/src/models/app.user.dart';
 import 'package:store_molino_diamante/src/routes/routes.dart';
 
 class MyApp extends StatefulWidget {
   final bool isConnected;
-  final User? user;
+  final AppUser? user;
   const MyApp({super.key, required this.isConnected, required this.user});
 
   @override
