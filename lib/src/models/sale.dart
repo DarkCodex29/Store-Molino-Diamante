@@ -21,7 +21,9 @@ class Sale {
       productId: json['productId'] ?? 'Producto desconocido',
       quantity: json['quantity'] ?? 0,
       price: json['price'] ?? 0.0,
-      date: DateTime.parse(json['date']),
+      date: (json['date'] != null)
+          ? (json['date'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -31,7 +33,7 @@ class Sale {
       'productId': productId,
       'quantity': quantity,
       'price': price,
-      'date': date.toIso8601String(),
+      'date': Timestamp.fromDate(date),
     };
   }
 

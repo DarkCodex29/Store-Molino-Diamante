@@ -20,8 +20,10 @@ class Buy {
       id: json['id'] ?? '',
       productId: json['productId'] ?? 'Producto desconocido',
       quantity: json['quantity'] ?? 0,
-      cost: json['cost'] ?? 0.0,
-      date: DateTime.parse(json['date']),
+      cost: json['cost'] != null ? (json['cost'] as num).toDouble() : 0.0,
+      date: (json['date'] != null)
+          ? (json['date'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -31,13 +33,15 @@ class Buy {
       'productId': productId,
       'quantity': quantity,
       'cost': cost,
-      'date': date.toIso8601String(),
+      'date': Timestamp.fromDate(date),
     };
   }
 
   // Firestore interaction methods
   static Future<void> addBuy(Buy buy) async {
-    await FirebaseFirestore.instance.collection('buys').add(buy.toJson());
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('buys').add(buy.toJson());
+    await docRef.update({'id': docRef.id});
   }
 
   static Future<void> updateBuy(String id, Buy buy) async {

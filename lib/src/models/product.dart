@@ -23,7 +23,7 @@ class Product {
       name: json['name'] ?? 'Producto desconocido',
       sku: json['sku'] ?? '',
       barcode: json['barcode'] ?? '',
-      price: json['price'] ?? 0.0,
+      price: json['price'] != null ? (json['price'] as num).toDouble() : 0.0,
       stock: json['stock'] ?? 0,
     );
   }
@@ -41,9 +41,10 @@ class Product {
 
   // Firestore interaction methods
   static Future<void> addProduct(Product product) async {
-    await FirebaseFirestore.instance
+    DocumentReference docRef = await FirebaseFirestore.instance
         .collection('products')
         .add(product.toJson());
+    await docRef.update({'id': docRef.id});
   }
 
   static Future<void> updateProduct(String id, Product product) async {

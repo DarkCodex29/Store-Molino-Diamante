@@ -10,12 +10,13 @@ class InventoryPage extends StatelessWidget {
     final InventoryController controller = Get.put(InventoryController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inventory Page'),
-      ),
+      backgroundColor: Colors.white,
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.inventories.isEmpty) {
+          return const Center(child: Text('El inventario está vacío'));
         }
         return ListView.builder(
           itemCount: controller.inventories.length,
@@ -38,7 +39,8 @@ class InventoryPage extends StatelessWidget {
         onPressed: () {
           // Open a dialog or new page to add a new inventory item
         },
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

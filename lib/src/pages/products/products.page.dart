@@ -10,12 +10,13 @@ class ProductsPage extends StatelessWidget {
     final ProductsController controller = Get.put(ProductsController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products Page'),
-      ),
+      backgroundColor: Colors.white,
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.products.isEmpty) {
+          return const Center(child: Text('No hay productos disponibles'));
         }
         return ListView.builder(
           itemCount: controller.products.length,
@@ -38,7 +39,8 @@ class ProductsPage extends StatelessWidget {
         onPressed: () {
           // Open a dialog or new page to add a new product
         },
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

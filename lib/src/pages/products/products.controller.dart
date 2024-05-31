@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-
 import 'package:store_molino_diamante/src/models/product.dart';
 
 class ProductsController extends GetxController {

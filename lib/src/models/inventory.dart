@@ -29,9 +29,10 @@ class Inventory {
 
   // Firestore interaction methods
   static Future<void> addInventory(Inventory inventory) async {
-    await FirebaseFirestore.instance
+    DocumentReference docRef = await FirebaseFirestore.instance
         .collection('inventories')
         .add(inventory.toJson());
+    await docRef.update({'id': docRef.id});
   }
 
   static Future<void> updateInventory(String id, Inventory inventory) async {

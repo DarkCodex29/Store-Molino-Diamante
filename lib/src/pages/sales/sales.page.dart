@@ -10,12 +10,13 @@ class SalesPage extends StatelessWidget {
     final SalesController controller = Get.put(SalesController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sales Page'),
-      ),
+      backgroundColor: Colors.white,
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.sales.isEmpty) {
+          return const Center(child: Text('No hay ventas disponibles'));
         }
         return ListView.builder(
           itemCount: controller.sales.length,
@@ -23,7 +24,8 @@ class SalesPage extends StatelessWidget {
             final sale = controller.sales[index];
             return ListTile(
               title: Text(sale.productId),
-              subtitle: Text('Quantity: ${sale.quantity}, Price: ${sale.price}'),
+              subtitle:
+                  Text('Quantity: ${sale.quantity}, Price: ${sale.price}'),
               trailing: IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
@@ -38,7 +40,8 @@ class SalesPage extends StatelessWidget {
         onPressed: () {
           // Open a dialog or new page to add a new sale
         },
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
