@@ -44,7 +44,7 @@ class AuthController extends GetxController {
           isLoggedIn(true);
           Get.offNamed(RoutesClass.getHome());
         } else {
-          Get.snackbar('Error', 'User not found in Firestore',
+          Get.snackbar('Error', 'Usuario no se encuentra registrado',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: Colors.red,
               colorText: Colors.white);
@@ -90,7 +90,7 @@ class AuthController extends GetxController {
           name: name.text.trim(),
           lastName: lastName.text.trim(),
           phone: phone.text.trim(),
-          role: role == 'admin' ? 1 : 0,
+          role: role == 'admin' ? 0 : 1,
           status: 1,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),

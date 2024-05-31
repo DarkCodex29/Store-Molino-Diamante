@@ -52,10 +52,10 @@ class AuthPageState extends State<AuthPage> {
               ),
               Container(
                 padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 10.0,
@@ -95,12 +95,17 @@ class AuthPageState extends State<AuthPage> {
         width: 150,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: _selectedIndex == index ? Colors.grey[200] : Colors.white,
-          borderRadius: _selectedIndex == index
-              ? BorderRadius.only(
-                  topLeft: Radius.circular(index == 0 ? 20 : 0),
-                  topRight: Radius.circular(index == 1 ? 20 : 0),
-                )
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: _selectedIndex == index
+              ? [
+                  const BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10.0,
+                    spreadRadius: 5.0,
+                    offset: Offset(0, 10),
+                  ),
+                ]
               : null,
         ),
         child: Text(

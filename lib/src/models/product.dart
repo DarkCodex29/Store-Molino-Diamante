@@ -7,15 +7,32 @@ class Product {
   String barcode;
   double price;
   int stock;
+  String description;
+  String category;
+  String supplier;
+  String imageURL;
+  double discount;
+  String status;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Product({
     required this.id,
     required this.name,
-    required this.sku,
+    this.sku = '',
     required this.barcode,
     required this.price,
     required this.stock,
-  });
+    this.description = '',
+    this.category = '',
+    this.supplier = '',
+    this.imageURL = '',
+    this.discount = 0.0,
+    this.status = 'active',
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  })  : createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -25,6 +42,15 @@ class Product {
       barcode: json['barcode'] ?? '',
       price: json['price'] != null ? (json['price'] as num).toDouble() : 0.0,
       stock: json['stock'] ?? 0,
+      description: json['description'] ?? '',
+      category: json['category'] ?? '',
+      supplier: json['supplier'] ?? '',
+      imageURL: json['imageURL'] ?? '',
+      discount:
+          json['discount'] != null ? (json['discount'] as num).toDouble() : 0.0,
+      status: json['status'] ?? 'active',
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
     );
   }
 
@@ -36,6 +62,14 @@ class Product {
       'barcode': barcode,
       'price': price,
       'stock': stock,
+      'description': description,
+      'category': category,
+      'supplier': supplier,
+      'imageURL': imageURL,
+      'discount': discount,
+      'status': status,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 

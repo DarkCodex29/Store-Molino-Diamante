@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Buy {
   String id;
   String productId;
+  String provider;
   int quantity;
   double cost;
   DateTime date;
@@ -10,6 +11,7 @@ class Buy {
   Buy({
     required this.id,
     required this.productId,
+    required this.provider,
     required this.quantity,
     required this.cost,
     required this.date,
@@ -19,6 +21,7 @@ class Buy {
     return Buy(
       id: json['id'] ?? '',
       productId: json['productId'] ?? 'Producto desconocido',
+      provider: json['provider'] ?? 'Proveedor desconocido',
       quantity: json['quantity'] ?? 0,
       cost: json['cost'] != null ? (json['cost'] as num).toDouble() : 0.0,
       date: (json['date'] != null)
@@ -31,6 +34,7 @@ class Buy {
     return {
       'id': id,
       'productId': productId,
+      'provider': provider,
       'quantity': quantity,
       'cost': cost,
       'date': Timestamp.fromDate(date),

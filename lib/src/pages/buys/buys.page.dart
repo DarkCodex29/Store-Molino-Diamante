@@ -9,6 +9,7 @@ class BuysPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final BuysController controller = Get.put(BuysController());
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Obx(() {
@@ -24,25 +25,21 @@ class BuysPage extends StatelessWidget {
             final buy = controller.buys[index];
             return ListTile(
               title: Text(buy.productId),
-              subtitle: Text(
-                  'Cantidad: ${buy.quantity}, Costo: ${buy.cost}, Fecha: ${buy.date}'),
+              subtitle:
+                  Text('Cantidad: ${buy.quantity}, Proveedor: ${buy.provider}'),
               trailing: IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
                   controller.deleteBuy(buy.id);
                 },
               ),
-              onTap: () {
-                // Implementar lógica para actualizar la compra
-                _showBuyDialog(context, controller, buy: buy);
-              },
             );
           },
         );
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showBuyDialog(context, controller);
+          _showAddBuyDialog(context, controller);
         },
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add, color: Colors.white),
@@ -50,22 +47,18 @@ class BuysPage extends StatelessWidget {
     );
   }
 
-  void _showBuyDialog(BuildContext context, BuysController controller,
-      {Buy? buy}) {
-    final TextEditingController productIdController =
-        TextEditingController(text: buy?.productId ?? '');
-    final TextEditingController quantityController =
-        TextEditingController(text: buy?.quantity.toString() ?? '');
-    final TextEditingController costController =
-        TextEditingController(text: buy?.cost.toString() ?? '');
-    final TextEditingController dateController =
-        TextEditingController(text: buy?.date.toIso8601String() ?? '');
+  void _showAddBuyDialog(BuildContext context, BuysController controller) {
+    final productIdController = TextEditingController();
+    final providerController = TextEditingController();
+    final quantityController = TextEditingController();
+    final costController = TextEditingController();
+    final dateController = TextEditingController();
 
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(buy == null ? 'Agregar Compra' : 'Actualizar Compra'),
+          title: const Text('Añadir Compra'),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -73,6 +66,10 @@ class BuysPage extends StatelessWidget {
                   controller: productIdController,
                   decoration:
                       const InputDecoration(labelText: 'ID del Producto'),
+                ),
+                TextField(
+                  controller: providerController,
+                  decoration: const InputDecoration(labelText: 'Proveedor'),
                 ),
                 TextField(
                   controller: quantityController,
@@ -94,40 +91,25 @@ class BuysPage extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
               onPressed: () {
-                final String productId = productIdController.text;
-                final int quantity = int.tryParse(quantityController.text) ?? 0;
-                final double cost = double.tryParse(costController.text) ?? 0.0;
-                final DateTime date =
-                    DateTime.tryParse(dateController.text) ?? DateTime.now();
-
-                if (buy == null) {
-                  final newBuy = Buy(
-                    id: '',
-                    productId: productId,
-                    quantity: quantity,
-                    cost: cost,
-                    date: date,
-                  );
-                  controller.addBuy(newBuy);
-                } else {
-                  final updatedBuy = Buy(
-                    id: buy.id,
-                    productId: productId,
-                    quantity: quantity,
-                    cost: cost,
-                    date: date,
-                  );
-                  controller.updateBuy(buy.id, updatedBuy);
-                }
-
                 Navigator.of(context).pop();
               },
-              child: const Text('Guardar'),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final buy = Buy(
+                  id: '', // ID generado automáticamente
+                  productId: productIdController.text,
+                  provider: providerController.text,
+                  quantity: int.tryParse(quantityController.text) ?? 0,
+                  cost: double.tryParse(costController.text) ?? 0.0,
+                  date: DateTime.parse(dateController.text),
+                );
+                controller.addBuy(buy);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Añadir'),
             ),
           ],
         );

@@ -1,28 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:store_molino_diamante/src/models/detail.sale.dart';
 
 class Sale {
   String id;
-  String productId;
-  int quantity;
-  double price;
   DateTime date;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Sale({
     required this.id,
-    required this.productId,
-    required this.quantity,
-    required this.price,
     required this.date,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory Sale.fromJson(Map<String, dynamic> json) {
     return Sale(
       id: json['id'] ?? '',
-      productId: json['productId'] ?? 'Producto desconocido',
-      quantity: json['quantity'] ?? 0,
-      price: json['price'] ?? 0.0,
       date: (json['date'] != null)
           ? (json['date'] as Timestamp).toDate()
+          : DateTime.now(),
+      createdAt: (json['createdAt'] != null)
+          ? (json['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      updatedAt: (json['updatedAt'] != null)
+          ? (json['updatedAt'] as Timestamp).toDate()
           : DateTime.now(),
     );
   }
@@ -30,19 +32,21 @@ class Sale {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'productId': productId,
-      'quantity': quantity,
-      'price': price,
       'date': Timestamp.fromDate(date),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 
   // Firestore interaction methods
   static Future<void> addSale(Sale sale) async {
-    await FirebaseFirestore.instance.collection('sales').add(sale.toJson());
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('sales').add(sale.toJson());
+    await docRef.update({'id': docRef.id});
   }
 
   static Future<void> updateSale(String id, Sale sale) async {
+    sale.updatedAt = DateTime.now();
     await FirebaseFirestore.instance
         .collection('sales')
         .doc(id)
@@ -68,6 +72,16 @@ class Sale {
         .snapshots()
         .map((query) {
       return query.docs.map((doc) => Sale.fromJson(doc.data())).toList();
+    });
+  }
+
+  static Stream<List<SaleDetail>> getSaleDetailsBySaleId(String saleId) {
+    return FirebaseFirestore.instance
+        .collection('saleDetails')
+        .where('saleId', isEqualTo: saleId)
+        .snapshots()
+        .map((query) {
+      return query.docs.map((doc) => SaleDetail.fromJson(doc.data())).toList();
     });
   }
 }

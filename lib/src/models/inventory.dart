@@ -4,11 +4,15 @@ class Inventory {
   String id;
   String productId;
   int quantity;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Inventory({
     required this.id,
     required this.productId,
     required this.quantity,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory Inventory.fromJson(Map<String, dynamic> json) {
@@ -16,6 +20,8 @@ class Inventory {
       id: json['id'] ?? '',
       productId: json['productId'] ?? 'Producto desconocido',
       quantity: json['quantity'] ?? 0,
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
     );
   }
 
@@ -24,6 +30,8 @@ class Inventory {
       'id': id,
       'productId': productId,
       'quantity': quantity,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 
@@ -36,6 +44,7 @@ class Inventory {
   }
 
   static Future<void> updateInventory(String id, Inventory inventory) async {
+    inventory.updatedAt = DateTime.now();
     await FirebaseFirestore.instance
         .collection('inventories')
         .doc(id)

@@ -23,9 +23,8 @@ class SalesPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final sale = controller.sales[index];
             return ListTile(
-              title: Text(sale.productId),
-              subtitle:
-                  Text('Quantity: ${sale.quantity}, Price: ${sale.price}'),
+              title: Text(sale.id),
+              subtitle: Text('Quantity: ${sale}, Price: ${sale}'),
               trailing: IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
