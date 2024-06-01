@@ -76,7 +76,8 @@ class Product {
       description: json['description'] ?? '',
       category: json['category'] ?? '',
       imageURL: json['imageURL'] ?? '',
-      discount: json['discount'] != null ? (json['discount'] as num).toDouble() : 0.0,
+      discount:
+          json['discount'] != null ? (json['discount'] as num).toDouble() : 0.0,
       status: json['status'] ?? 'active',
       createdAt: (json['createdAt'] != null)
           ? (json['createdAt'] as Timestamp).toDate()
@@ -86,7 +87,8 @@ class Product {
           : DateTime.now(),
       suppliersInfo: json['suppliersInfo'] != null
           ? (json['suppliersInfo'] as List)
-              .map((supplierInfoJson) => SupplierInfo.fromJson(supplierInfoJson))
+              .map(
+                  (supplierInfoJson) => SupplierInfo.fromJson(supplierInfoJson))
               .toList()
           : [],
     );
@@ -107,7 +109,8 @@ class Product {
       'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
-      'suppliersInfo': suppliersInfo.map((supplierInfo) => supplierInfo.toJson()).toList(),
+      'suppliersInfo':
+          suppliersInfo.map((supplierInfo) => supplierInfo.toJson()).toList(),
     };
   }
 
@@ -149,8 +152,8 @@ class Product {
     });
   }
 
-  // Method to update the stock
-  static Future<void> updateStock(String productId, int quantity) async {
+  static Future<void> updateStockAndSupplierInfo(
+      String productId, int quantity, SupplierInfo supplierInfo) async {
     DocumentReference docRef =
         FirebaseFirestore.instance.collection('products').doc(productId);
     FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -158,10 +161,28 @@ class Product {
       if (!snapshot.exists) {
         throw Exception("Product does not exist!");
       }
-      int newStock =
-          (snapshot.data() as Map<String, dynamic>)['stock'] + quantity;
-      transaction.update(docRef,
-          {'stock': newStock, 'updatedAt': Timestamp.fromDate(DateTime.now())});
+      var productData = snapshot.data() as Map<String, dynamic>;
+      int newStock = productData['stock'] + quantity;
+
+      List<dynamic> suppliersInfoList = productData['suppliersInfo'] ?? [];
+      bool supplierExists = false;
+      for (var info in suppliersInfoList) {
+        if (info['supplierId'] == supplierInfo.supplierId) {
+          info['quantity'] += quantity;
+          info['purchasePrice'] = supplierInfo.purchasePrice;
+          supplierExists = true;
+          break;
+        }
+      }
+      if (!supplierExists) {
+        suppliersInfoList.add(supplierInfo.toJson());
+      }
+
+      transaction.update(docRef, {
+        'stock': newStock,
+        'updatedAt': Timestamp.fromDate(DateTime.now()),
+        'suppliersInfo': suppliersInfoList,
+      });
     });
   }
 }

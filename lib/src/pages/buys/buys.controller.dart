@@ -35,12 +35,43 @@ class BuysController extends GetxController {
     isLoading(false);
   }
 
-  void addBuy(Buy buy) async {
-    await Buy.addBuy(buy);
+  String getSupplierName(String id) {
+    final supplier = suppliers.firstWhere(
+      (supplier) => supplier.id == id,
+      orElse: () => Supplier(
+        id: id,
+        name: 'Proveedor desconocido',
+        contact: '',
+        email: '',
+        address: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
+    return supplier.name;
   }
 
-  void updateBuy(String id, Buy buy) async {
-    await Buy.updateBuy(id, buy);
+  void addBuy(Buy buy) async {
+    // Add each product in the buy details
+    for (var detail in buy.details) {
+      // Find the product in the list of products
+      var product = products.firstWhereOrNull((p) => p.id == detail.productId);
+      if (product != null) {
+        // Update stock and supplier info
+        await Product.updateStockAndSupplierInfo(
+          product.id,
+          detail.quantity,
+          SupplierInfo(
+            supplierId: buy.supplierId,
+            quantity: detail.quantity,
+            purchasePrice: detail.unitCost,
+          ),
+        );
+      } else {
+        // Handle case where the product is not found, if necessary
+      }
+    }
+    await Buy.addBuy(buy);
   }
 
   void deleteBuy(String id) async {

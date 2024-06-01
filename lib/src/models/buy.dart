@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
 import 'detail.buy.dart';
-
 class Buy {
   String id;
   String supplierId;
@@ -52,7 +51,15 @@ class Buy {
       await detail.addBuyDetail();
     }
     for (var detail in buy.details) {
-      Product.updateStock(detail.productId, detail.quantity);
+      await Product.updateStockAndSupplierInfo(
+        detail.productId,
+        detail.quantity,
+        SupplierInfo(
+          supplierId: buy.supplierId,
+          quantity: detail.quantity,
+          purchasePrice: detail.unitCost,
+        ),
+      );
     }
   }
 

@@ -24,9 +24,8 @@ class ProductsPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final product = controller.products[index];
             final supplierNames = product.suppliersInfo
-                .map((supplierInfo) =>
-                    '${controller.getSupplierName(supplierInfo.supplierId)}: ${supplierInfo.quantity} unidades, Precio: S/. ${supplierInfo.purchasePrice.toStringAsFixed(2)}')
-                .join('\n');
+                .map((info) => controller.getSupplierName(info.supplierId))
+                .join(', ');
             return ExpansionTile(
               title: Text(product.name),
               subtitle: Text('Stock: ${product.stock}'),
@@ -39,8 +38,16 @@ class ProductsPage extends StatelessWidget {
                       Text('Precio: S/. ${product.price.toStringAsFixed(2)}'),
                 ),
                 ListTile(
-                  title: Text('Proveedores:'),
-                  subtitle: Text(supplierNames),
+                  title: Text('Proveedores: $supplierNames'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: product.suppliersInfo.map((info) {
+                      final supplierName =
+                          controller.getSupplierName(info.supplierId);
+                      return Text(
+                          'Proveedor: $supplierName, Cantidad: ${info.quantity}, Precio de compra: S/. ${info.purchasePrice.toStringAsFixed(2)}');
+                    }).toList(),
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete),
