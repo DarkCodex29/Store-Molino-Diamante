@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:store_molino_diamante/src/models/buy.dart';
+import 'package:store_molino_diamante/src/models/product.category.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
 import 'package:store_molino_diamante/src/models/supplier.dart';
 
@@ -7,6 +8,8 @@ class BuysController extends GetxController {
   var buys = <Buy>[].obs;
   var products = <Product>[].obs;
   var suppliers = <Supplier>[].obs;
+  var categories = <ProductCategory>[].obs;
+
   var isLoading = false.obs;
 
   @override
@@ -29,17 +32,23 @@ class BuysController extends GetxController {
     isLoading(false);
   }
 
+  void fetchCategories() async {
+    isLoading(true);
+    categories.bindStream(ProductCategory.getProductCategories());
+    isLoading(false);
+  }
+
   void fetchSuppliers() async {
     isLoading(true);
     suppliers.bindStream(Supplier.getSuppliers());
     isLoading(false);
   }
 
-  String getSupplierName(String id) {
-    final supplier = suppliers.firstWhere(
+  Supplier getSupplierById(String id) {
+    return suppliers.firstWhere(
       (supplier) => supplier.id == id,
       orElse: () => Supplier(
-        id: id,
+        id: '',
         name: 'Proveedor desconocido',
         contact: '',
         email: '',
@@ -48,16 +57,26 @@ class BuysController extends GetxController {
         updatedAt: DateTime.now(),
       ),
     );
-    return supplier.name;
+  }
+
+  Product getProductById(String id) {
+    return products.firstWhere(
+      (product) => product.id == id,
+      orElse: () => Product(
+        id: '',
+        name: 'Producto desconocido',
+        barcode: '',
+        price: 0.0,
+        stock: 0,
+        suppliersInfo: [],
+      ),
+    );
   }
 
   void addBuy(Buy buy) async {
-    // Add each product in the buy details
     for (var detail in buy.details) {
-      // Find the product in the list of products
       var product = products.firstWhereOrNull((p) => p.id == detail.productId);
       if (product != null) {
-        // Update stock and supplier info
         await Product.updateStockAndSupplierInfo(
           product.id,
           detail.quantity,
@@ -67,11 +86,21 @@ class BuysController extends GetxController {
             purchasePrice: detail.unitCost,
           ),
         );
-      } else {
-        // Handle case where the product is not found, if necessary
       }
     }
     await Buy.addBuy(buy);
+  }
+
+  void addProduct(Product product) async {
+    final existingProduct =
+        products.firstWhereOrNull((p) => p.barcode == product.barcode);
+    if (existingProduct != null) {
+      existingProduct.stock += product.stock;
+      await Product.updateProduct(existingProduct.id, existingProduct);
+    } else {
+      await Product.addProduct(product);
+    }
+    fetchProducts(); // Refresh the product list
   }
 
   void deleteBuy(String id) async {

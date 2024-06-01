@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
+import 'package:store_molino_diamante/src/models/product.category.dart';
 import 'package:store_molino_diamante/src/models/supplier.dart';
 
 class ProductsController extends GetxController {
   var products = <Product>[].obs;
   var suppliers = <Supplier>[].obs;
+  var categories = <ProductCategory>[].obs;
   var isLoading = false.obs;
 
   @override
@@ -12,6 +14,7 @@ class ProductsController extends GetxController {
     super.onInit();
     fetchProducts();
     fetchSuppliers();
+    fetchCategories();
   }
 
   void fetchProducts() async {
@@ -23,6 +26,12 @@ class ProductsController extends GetxController {
   void fetchSuppliers() async {
     isLoading(true);
     suppliers.bindStream(Supplier.getSuppliers());
+    isLoading(false);
+  }
+
+  void fetchCategories() async {
+    isLoading(true);
+    categories.bindStream(ProductCategory.getProductCategories());
     isLoading(false);
   }
 
@@ -42,23 +51,26 @@ class ProductsController extends GetxController {
     return supplier.name;
   }
 
+  String getCategoryName(String id) {
+    final category = categories.firstWhere(
+      (category) => category.id == id,
+      orElse: () => ProductCategory(
+        id: id,
+        name: 'Categoría desconocida',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
+    return category.name;
+  }
+
   void addProduct(Product product) async {
     // Check if product already exists
     final existingProduct =
         products.firstWhereOrNull((p) => p.barcode == product.barcode);
     if (existingProduct != null) {
-      // Update stock and add supplier info if not already present
+      // Update stock
       existingProduct.stock += product.stock;
-      final existingSupplier = existingProduct.suppliersInfo.firstWhereOrNull(
-        (s) => s.supplierId == product.suppliersInfo.first.supplierId,
-      );
-      if (existingSupplier != null) {
-        existingSupplier.quantity += product.suppliersInfo.first.quantity;
-        existingSupplier.purchasePrice =
-            product.suppliersInfo.first.purchasePrice;
-      } else {
-        existingProduct.suppliersInfo.add(product.suppliersInfo.first);
-      }
       await Product.updateProduct(existingProduct.id, existingProduct);
     } else {
       await Product.addProduct(product);

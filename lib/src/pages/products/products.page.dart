@@ -23,39 +23,15 @@ class ProductsPage extends StatelessWidget {
           itemCount: controller.products.length,
           itemBuilder: (context, index) {
             final product = controller.products[index];
-            final supplierNames = product.suppliersInfo
-                .map((info) => controller.getSupplierName(info.supplierId))
-                .join(', ');
-            return ExpansionTile(
+            return ListTile(
               title: Text(product.name),
-              subtitle: Text('Stock: ${product.stock}'),
-              children: [
-                ListTile(
-                  title: Text('Código de Barras: ${product.barcode}'),
-                ),
-                ListTile(
-                  title:
-                      Text('Precio: S/. ${product.price.toStringAsFixed(2)}'),
-                ),
-                ListTile(
-                  title: Text('Proveedores: $supplierNames'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: product.suppliersInfo.map((info) {
-                      final supplierName =
-                          controller.getSupplierName(info.supplierId);
-                      return Text(
-                          'Proveedor: $supplierName, Cantidad: ${info.quantity}, Precio de compra: S/. ${info.purchasePrice.toStringAsFixed(2)}');
-                    }).toList(),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    controller.deleteProduct(product.id);
-                  },
-                ),
-              ],
+              subtitle: Text('Precio: S/. ${product.price.toStringAsFixed(2)}'),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  controller.deleteProduct(product.id);
+                },
+              ),
             );
           },
         );
@@ -76,9 +52,8 @@ class ProductsPage extends StatelessWidget {
     final barcodeController = TextEditingController();
     final priceController = TextEditingController();
     final stockController = TextEditingController();
-    final purchasePriceController = TextEditingController();
-    String selectedSupplierId =
-        controller.suppliers.isNotEmpty ? controller.suppliers.first.id : '';
+    String selectedCategoryId =
+        controller.categories.isNotEmpty ? controller.categories.first.id : '';
 
     showDialog(
       context: context,
@@ -108,22 +83,16 @@ class ProductsPage extends StatelessWidget {
                   decoration: const InputDecoration(labelText: 'Stock'),
                   keyboardType: TextInputType.number,
                 ),
-                TextField(
-                  controller: purchasePriceController,
-                  decoration:
-                      const InputDecoration(labelText: 'Precio de compra'),
-                  keyboardType: TextInputType.number,
-                ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Proveedor'),
-                  value: selectedSupplierId,
+                  decoration: const InputDecoration(labelText: 'Categoría'),
+                  value: selectedCategoryId,
                   onChanged: (value) {
-                    selectedSupplierId = value!;
+                    selectedCategoryId = value!;
                   },
-                  items: controller.suppliers.map((supplier) {
+                  items: controller.categories.map((category) {
                     return DropdownMenuItem<String>(
-                      value: supplier.id,
-                      child: Text(supplier.name),
+                      value: category.id,
+                      child: Text(category.name),
                     );
                   }).toList(),
                 ),
@@ -145,14 +114,8 @@ class ProductsPage extends StatelessWidget {
                   barcode: barcodeController.text,
                   price: double.tryParse(priceController.text) ?? 0.0,
                   stock: int.tryParse(stockController.text) ?? 0,
-                  suppliersInfo: [
-                    SupplierInfo(
-                      supplierId: selectedSupplierId,
-                      quantity: int.tryParse(stockController.text) ?? 0,
-                      purchasePrice:
-                          double.tryParse(purchasePriceController.text) ?? 0.0,
-                    ),
-                  ],
+                  category: selectedCategoryId,
+                  suppliersInfo: [], // Empty since we are not adding suppliers here
                 );
                 controller.addProduct(product);
                 Navigator.of(context).pop();

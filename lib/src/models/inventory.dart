@@ -4,28 +4,29 @@ class Inventory {
   String id;
   String productId;
   int quantity;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String type; // 'in' for incoming stock, 'out' for outgoing stock
+  DateTime date;
+  String source; // 'buy', 'sale', 'adjustment'
 
   Inventory({
     required this.id,
     required this.productId,
     required this.quantity,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.type,
+    required this.date,
+    required this.source,
   });
 
   factory Inventory.fromJson(Map<String, dynamic> json) {
     return Inventory(
       id: json['id'] ?? '',
-      productId: json['productId'] ?? 'Producto desconocido',
+      productId: json['productId'] ?? '',
       quantity: json['quantity'] ?? 0,
-      createdAt: (json['createdAt'] != null)
-          ? (json['createdAt'] as Timestamp).toDate()
+      type: json['type'] ?? '',
+      date: (json['date'] != null)
+          ? (json['date'] as Timestamp).toDate()
           : DateTime.now(),
-      updatedAt: (json['updatedAt'] != null)
-          ? (json['updatedAt'] as Timestamp).toDate()
-          : DateTime.now(),
+      source: json['source'] ?? '',
     );
   }
 
@@ -34,8 +35,9 @@ class Inventory {
       'id': id,
       'productId': productId,
       'quantity': quantity,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
+      'type': type,
+      'date': Timestamp.fromDate(date),
+      'source': source,
     };
   }
 

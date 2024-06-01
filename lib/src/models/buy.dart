@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
 import 'detail.buy.dart';
+
 class Buy {
   String id;
   String supplierId;

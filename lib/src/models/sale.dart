@@ -6,12 +6,14 @@ class Sale {
   DateTime date;
   DateTime createdAt;
   DateTime updatedAt;
+  List<SaleDetail> details;
 
   Sale({
     required this.id,
     required this.date,
     required this.createdAt,
     required this.updatedAt,
+    required this.details,
   });
 
   factory Sale.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,11 @@ class Sale {
       updatedAt: (json['updatedAt'] != null)
           ? (json['updatedAt'] as Timestamp).toDate()
           : DateTime.now(),
+      details: (json['details'] as List<dynamic>?)
+              ?.map((detail) =>
+                  SaleDetail.fromJson(detail as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -35,6 +42,7 @@ class Sale {
       'date': Timestamp.fromDate(date),
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'details': details.map((detail) => detail.toJson()).toList(),
     };
   }
 
@@ -43,6 +51,9 @@ class Sale {
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('sales').add(sale.toJson());
     await docRef.update({'id': docRef.id});
+    for (var detail in sale.details) {
+      await SaleDetail.addSaleDetail(detail..saleId = docRef.id);
+    }
   }
 
   static Future<void> updateSale(String id, Sale sale) async {
@@ -51,9 +62,18 @@ class Sale {
         .collection('sales')
         .doc(id)
         .update(sale.toJson());
+    for (var detail in sale.details) {
+      await SaleDetail.updateSaleDetail(detail.id, detail);
+    }
   }
 
   static Future<void> deleteSale(String id) async {
+    // First delete all sale details
+    var saleDetails = await getSaleDetailsBySaleId(id).first;
+    for (var detail in saleDetails) {
+      await SaleDetail.deleteSaleDetail(detail.id);
+    }
+    // Then delete the sale
     await FirebaseFirestore.instance.collection('sales').doc(id).delete();
   }
 
@@ -61,7 +81,9 @@ class Sale {
     DocumentSnapshot doc =
         await FirebaseFirestore.instance.collection('sales').doc(id).get();
     if (doc.exists) {
-      return Sale.fromJson(doc.data() as Map<String, dynamic>);
+      var sale = Sale.fromJson(doc.data() as Map<String, dynamic>);
+      sale.details = await getSaleDetailsBySaleId(id).first;
+      return sale;
     }
     return null;
   }
