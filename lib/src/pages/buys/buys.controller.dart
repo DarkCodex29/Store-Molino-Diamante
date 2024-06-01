@@ -100,10 +100,29 @@ class BuysController extends GetxController {
     } else {
       await Product.addProduct(product);
     }
-    fetchProducts(); // Refresh the product list
+    fetchProducts();
   }
 
   void deleteBuy(String id) async {
+    var buy = await Buy.getBuyById(id);
+    if (buy != null) {
+      for (var detail in buy.details) {
+        var product =
+            products.firstWhereOrNull((p) => p.id == detail.productId);
+        if (product != null) {
+          await Product.updateStockAndSupplierInfo(
+            product.id,
+            -detail.quantity,
+            SupplierInfo(
+              supplierId: buy.supplierId,
+              quantity: -detail.quantity,
+              purchasePrice: detail.unitCost,
+            ),
+          );
+        }
+      }
+    }
     await Buy.deleteBuy(id);
+    fetchBuys();
   }
 }

@@ -4,29 +4,29 @@ class Inventory {
   String id;
   String productId;
   int quantity;
-  String type; // 'in' for incoming stock, 'out' for outgoing stock
-  DateTime date;
-  String source; // 'buy', 'sale', 'adjustment'
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Inventory({
     required this.id,
     required this.productId,
     required this.quantity,
-    required this.type,
-    required this.date,
-    required this.source,
-  });
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  })  : createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 
   factory Inventory.fromJson(Map<String, dynamic> json) {
     return Inventory(
       id: json['id'] ?? '',
       productId: json['productId'] ?? '',
       quantity: json['quantity'] ?? 0,
-      type: json['type'] ?? '',
-      date: (json['date'] != null)
-          ? (json['date'] as Timestamp).toDate()
+      createdAt: (json['createdAt'] != null)
+          ? (json['createdAt'] as Timestamp).toDate()
           : DateTime.now(),
-      source: json['source'] ?? '',
+      updatedAt: (json['updatedAt'] != null)
+          ? (json['updatedAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -35,13 +35,11 @@ class Inventory {
       'id': id,
       'productId': productId,
       'quantity': quantity,
-      'type': type,
-      'date': Timestamp.fromDate(date),
-      'source': source,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 
-  // Firestore interaction methods
   static Future<void> addInventory(Inventory inventory) async {
     DocumentReference docRef = await FirebaseFirestore.instance
         .collection('inventories')
@@ -50,6 +48,7 @@ class Inventory {
   }
 
   static Future<void> updateInventory(String id, Inventory inventory) async {
+    inventory.updatedAt = DateTime.now();
     await FirebaseFirestore.instance
         .collection('inventories')
         .doc(id)

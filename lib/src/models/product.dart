@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class SupplierInfo {
   String supplierId;
   int quantity;
@@ -115,7 +114,6 @@ class Product {
     };
   }
 
-  // Firestore interaction methods
   static Future<void> addProduct(Product product) async {
     DocumentReference docRef = await FirebaseFirestore.instance
         .collection('products')

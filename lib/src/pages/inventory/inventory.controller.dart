@@ -49,7 +49,15 @@ class InventoryController extends GetxController {
   }
 
   void addProduct(Product product) async {
-    await Product.addProduct(product);
+    final existingProduct =
+        products.firstWhereOrNull((p) => p.barcode == product.barcode);
+    if (existingProduct != null) {
+      existingProduct.stock += product.stock;
+      await Product.updateProduct(existingProduct.id, existingProduct);
+    } else {
+      await Product.addProduct(product);
+    }
+    fetchProducts();
   }
 
   void updateInventory(String id, Inventory inventory) async {
