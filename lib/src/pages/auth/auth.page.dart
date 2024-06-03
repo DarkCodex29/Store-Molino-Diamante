@@ -34,7 +34,7 @@ class AuthPageState extends State<AuthPage> {
               Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 child: Image.asset(
-                  'assets/logo.png',
+                  'assets/logoSD.png',
                   height: 200,
                 ),
               ),

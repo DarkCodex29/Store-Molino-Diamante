@@ -52,7 +52,7 @@ class CustomAppBar extends AppBar {
             backgroundColor: Colors.white,
             radius: 20,
             child: Image.asset(
-              'assets/logo.png',
+              'assets/logoSD.png',
               fit: BoxFit.fitHeight,
               height: kToolbarHeight - 15,
             ),
@@ -86,7 +86,7 @@ class CustomAppBar extends AppBar {
                 backgroundColor: Colors.white,
                 radius: 40,
                 backgroundImage:
-                    AssetImage('assets/logo.png'), // Imagen del logo
+                    AssetImage('assets/logoSD.png'),
               ),
               const SizedBox(height: 10),
               Text(
