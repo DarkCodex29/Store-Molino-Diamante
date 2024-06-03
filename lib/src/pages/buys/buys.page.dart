@@ -28,7 +28,8 @@ class BuysPage extends StatelessWidget {
             final buy = controller.buys[index];
             final supplier = controller.getSupplierById(buy.supplierId);
             return ExpansionTile(
-              title: Text('Compra ${index + 1}: ${supplier.name}'),
+              title: Text(
+                  'Compra ${controller.buys.length - index}: ${supplier.name}'),
               subtitle:
                   Text('Costo Total: S/. ${buy.totalCost.toStringAsFixed(2)}'),
               children: buy.details.map((detail) {

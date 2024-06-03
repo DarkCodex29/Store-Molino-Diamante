@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_molino_diamante/src/models/sale.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
@@ -16,7 +17,11 @@ class SalesController extends GetxController {
 
   void fetchSales() async {
     isLoading(true);
-    sales.bindStream(Sale.getSales());
+    sales.bindStream(Sale.getSales().map((query) {
+      var salesList = query.toList();
+      salesList.sort((a, b) => a.date.compareTo(b.date));
+      return salesList;
+    }));
     isLoading(false);
   }
 
@@ -27,6 +32,23 @@ class SalesController extends GetxController {
   }
 
   void addSale(Sale sale) async {
+    for (var detail in sale.details) {
+      var product = products.firstWhereOrNull((p) => p.id == detail.productId);
+      if (product != null) {
+        if (product.stock < detail.quantity) {
+          Get.snackbar(
+            'Venta no procesada',
+            'Tiene ${product.stock} en stock. Comuníquese con el administrador.',
+            colorText: Colors.white,
+            backgroundColor: Colors.red,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+          );
+          return;
+        }
+      }
+    }
+
     await Sale.addSale(sale);
     for (var detail in sale.details) {
       var product = products.firstWhereOrNull((p) => p.id == detail.productId);

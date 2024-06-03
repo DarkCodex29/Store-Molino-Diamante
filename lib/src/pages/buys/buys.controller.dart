@@ -23,7 +23,11 @@ class BuysController extends GetxController {
 
   void fetchBuys() async {
     isLoading(true);
-    buys.bindStream(Buy.getBuys());
+    buys.bindStream(Buy.getBuys().map((query) {
+      var buysList = query.toList();
+      buysList.sort((a, b) => a.date.compareTo(b.date));
+      return buysList;
+    }));
     isLoading(false);
   }
 
