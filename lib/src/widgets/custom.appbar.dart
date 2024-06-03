@@ -52,7 +52,7 @@ class CustomAppBar extends AppBar {
             backgroundColor: Colors.black,
             radius: 20,
             child: Image.asset(
-              'assets/logoSD.png',
+              'assets/logoSDN.png',
               fit: BoxFit.fitHeight,
               height: kToolbarHeight - 15,
             ),
@@ -85,7 +85,7 @@ class CustomAppBar extends AppBar {
               const CircleAvatar(
                 backgroundColor: Colors.black,
                 radius: 40,
-                backgroundImage: AssetImage('assets/logoSD.png'),
+                backgroundImage: AssetImage('assets/logoSDN.png'),
               ),
               const SizedBox(height: 10),
               Text(

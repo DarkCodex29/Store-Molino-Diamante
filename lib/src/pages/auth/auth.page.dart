@@ -35,7 +35,7 @@ class AuthPageState extends State<AuthPage> {
                 backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                 radius: 80,
                 child: Image.asset(
-                  'assets/logoSD.png',
+                  'assets/logoSDN.png',
                   height: 200,
                 ),
               ),
