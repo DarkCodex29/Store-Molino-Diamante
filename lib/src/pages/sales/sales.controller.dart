@@ -28,6 +28,16 @@ class SalesController extends GetxController {
 
   void addSale(Sale sale) async {
     await Sale.addSale(sale);
+    for (var detail in sale.details) {
+      var product = products.firstWhereOrNull((p) => p.id == detail.productId);
+      if (product != null) {
+        product.stock -= detail.quantity;
+        await Product.updateProduct(product.id, product);
+      }
+    }
+
+    fetchSales();
+    fetchProducts();
   }
 
   void updateSale(String id, Sale sale) async {

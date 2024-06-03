@@ -46,7 +46,6 @@ class Sale {
     };
   }
 
-  // Firestore interaction methods
   static Future<void> addSale(Sale sale) async {
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('sales').add(sale.toJson());

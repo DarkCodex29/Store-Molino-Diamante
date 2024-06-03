@@ -69,9 +69,11 @@ class BuysPage extends StatelessWidget {
                 id: '',
                 buyId: '',
                 productId: controller.products.first.id,
-                quantity: 1,
+                quantity: 0,
                 unitCost: controller.products.first.price,
                 totalCost: controller.products.first.price,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
               ));
               setState(() {});
             }

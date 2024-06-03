@@ -46,11 +46,12 @@ class Buy {
   static Future<void> addBuy(Buy buy) async {
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('buys').add(buy.toJson());
-    await docRef.update({'id': docRef.id});
+    String buyId = docRef.id;
+    await docRef.update({'id': buyId});
 
-    // Log para verificar la adición de detalles de compra
-    log('Adding buy details for buy: ${buy.id}');
+    log('Adding buy details for buy: $buyId');
     for (var detail in buy.details) {
+      detail.buyId = buyId;
       await detail.addBuyDetail();
       log('Added buy detail for product: ${detail.productId}, quantity: ${detail.quantity}');
     }
