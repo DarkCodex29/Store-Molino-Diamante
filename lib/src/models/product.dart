@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:developer'; // Importar paquete de logging
 
 class SupplierInfo {
   String supplierId;
@@ -163,6 +164,8 @@ class Product {
       var productData = snapshot.data() as Map<String, dynamic>;
       int newStock = productData['stock'] + quantity;
 
+      log('Updating stock for product $productId. Current stock: ${productData['stock']}, Quantity: $quantity, New stock: $newStock');
+
       List<dynamic> suppliersInfoList = productData['suppliersInfo'] ?? [];
       bool supplierExists = false;
       for (var info in suppliersInfoList) {
@@ -170,11 +173,13 @@ class Product {
           info['quantity'] += quantity;
           info['purchasePrice'] = supplierInfo.purchasePrice;
           supplierExists = true;
+          log('Updated supplier info for supplier ${supplierInfo.supplierId}. New quantity: ${info['quantity']}, New purchase price: ${info['purchasePrice']}');
           break;
         }
       }
       if (!supplierExists) {
         suppliersInfoList.add(supplierInfo.toJson());
+        log('Added new supplier info for supplier ${supplierInfo.supplierId}. Quantity: ${supplierInfo.quantity}, Purchase price: ${supplierInfo.purchasePrice}');
       }
 
       transaction.update(docRef, {
@@ -182,6 +187,8 @@ class Product {
         'updatedAt': Timestamp.fromDate(DateTime.now()),
         'suppliersInfo': suppliersInfoList,
       });
+
+      log('Product $productId updated successfully with new stock: $newStock and supplier info.');
     });
   }
 }

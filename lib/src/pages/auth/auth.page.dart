@@ -31,13 +31,15 @@ class AuthPageState extends State<AuthPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 50),
-              Container(
-                margin: const EdgeInsets.only(bottom: 20),
+              CircleAvatar(
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                radius: 80,
                 child: Image.asset(
                   'assets/logoSD.png',
                   height: 200,
                 ),
               ),
+              const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 margin: const EdgeInsets.only(bottom: 20),

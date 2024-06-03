@@ -49,7 +49,7 @@ class CustomAppBar extends AppBar {
                 color: Colors.white,
               )),
           title: CircleAvatar(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.black,
             radius: 20,
             child: Image.asset(
               'assets/logoSD.png',
@@ -83,10 +83,9 @@ class CustomAppBar extends AppBar {
             mainAxisSize: MainAxisSize.min,
             children: [
               const CircleAvatar(
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.black,
                 radius: 40,
-                backgroundImage:
-                    AssetImage('assets/logoSD.png'),
+                backgroundImage: AssetImage('assets/logoSD.png'),
               ),
               const SizedBox(height: 10),
               Text(

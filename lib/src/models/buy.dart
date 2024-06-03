@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:store_molino_diamante/src/models/product.dart';
 import 'detail.buy.dart';
+import 'dart:developer'; // Importar paquete de logging
 
 class Buy {
   String id;
@@ -43,24 +43,16 @@ class Buy {
     };
   }
 
-  // Firestore interaction methods
   static Future<void> addBuy(Buy buy) async {
     DocumentReference docRef =
         await FirebaseFirestore.instance.collection('buys').add(buy.toJson());
     await docRef.update({'id': docRef.id});
+
+    // Log para verificar la adición de detalles de compra
+    log('Adding buy details for buy: ${buy.id}');
     for (var detail in buy.details) {
       await detail.addBuyDetail();
-    }
-    for (var detail in buy.details) {
-      await Product.updateStockAndSupplierInfo(
-        detail.productId,
-        detail.quantity,
-        SupplierInfo(
-          supplierId: buy.supplierId,
-          quantity: detail.quantity,
-          purchasePrice: detail.unitCost,
-        ),
-      );
+      log('Added buy detail for product: ${detail.productId}, quantity: ${detail.quantity}');
     }
   }
 
