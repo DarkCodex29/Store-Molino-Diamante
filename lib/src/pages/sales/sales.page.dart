@@ -114,7 +114,10 @@ class SalesPage extends StatelessWidget {
             }
 
             return AlertDialog(
-              title: const Text('Agregar Venta'),
+              title: const Text(
+                'Agregar venta',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               content: Form(
                 key: formKey,
                 child: SingleChildScrollView(
@@ -154,13 +157,16 @@ class SalesPage extends StatelessWidget {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Cancelar'),
+                  child: const Text('Cancelar',
+                      style: TextStyle(color: Colors.grey)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 ElevatedButton(
-                  child: const Text('Guardar'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  child: const Text('Guardar',
+                      style: TextStyle(color: Colors.white)),
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       final sale = Sale(

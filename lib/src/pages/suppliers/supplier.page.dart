@@ -23,14 +23,20 @@ class SuppliersPage extends StatelessWidget {
           itemCount: controller.suppliers.length,
           itemBuilder: (context, index) {
             final supplier = controller.suppliers[index];
-            return ListTile(
-              title: Text(supplier.name),
-              subtitle: Text('Contacto: ${supplier.contact}'),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  controller.deleteSupplier(supplier.id);
-                },
+            return Card(
+              color: Colors.grey[100],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Colors.blue, width: 1)),
+              child: ListTile(
+                title: Text(supplier.name),
+                subtitle: Text('Contacto: ${supplier.contact}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    controller.deleteSupplier(supplier.id);
+                  },
+                ),
               ),
             );
           },
@@ -55,7 +61,8 @@ class SuppliersPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Agregar Proveedor'),
+          title: const Text('Agregar proveedor',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -74,9 +81,11 @@ class SuppliersPage extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancelar'),
+              child:
+                  const Text('Cancelar', style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               onPressed: () {
                 final newSupplier = Supplier(
                   id: '',
@@ -90,7 +99,8 @@ class SuppliersPage extends StatelessWidget {
                 controller.addSupplier(newSupplier);
                 Navigator.of(context).pop();
               },
-              child: const Text('Agregar'),
+              child:
+                  const Text('Agregar', style: TextStyle(color: Colors.white)),
             ),
           ],
         );

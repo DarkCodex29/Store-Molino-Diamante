@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:store_molino_diamante/src/models/detail.buy.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
 import 'package:store_molino_diamante/src/models/supplier.dart';
+import 'package:store_molino_diamante/src/widgets/custom.dropdown.dart';
+import 'package:store_molino_diamante/src/widgets/custom.textfield.dart';
 import 'buys.controller.dart';
 import 'package:store_molino_diamante/src/models/buy.dart';
 
@@ -27,19 +29,25 @@ class BuysPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final buy = controller.buys[index];
             final supplier = controller.getSupplierById(buy.supplierId);
-            return ExpansionTile(
-              title: Text(
-                  'Compra ${controller.buys.length - index}: ${supplier.name}'),
-              subtitle:
-                  Text('Costo Total: S/. ${buy.totalCost.toStringAsFixed(2)}'),
-              children: buy.details.map((detail) {
-                final product = controller.getProductById(detail.productId);
-                return ListTile(
-                  title: Text(product.name),
-                  subtitle: Text(
-                      'Cantidad: ${detail.quantity}, Costo: S/. ${detail.totalCost.toStringAsFixed(2)}'),
-                );
-              }).toList(),
+            return Card(
+              color: Colors.grey[100],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Colors.blue, width: 1)),
+              child: ExpansionTile(
+                title: Text(
+                    'Compra ${controller.buys.length - index}: ${supplier.name}'),
+                subtitle: Text(
+                    'Costo Total: S/. ${buy.totalCost.toStringAsFixed(2)}'),
+                children: buy.details.map((detail) {
+                  final product = controller.getProductById(detail.productId);
+                  return ListTile(
+                    title: Text(product.name),
+                    subtitle: Text(
+                        'Cantidad: ${detail.quantity}, Costo: S/. ${detail.totalCost.toStringAsFixed(2)}'),
+                  );
+                }).toList(),
+              ),
             );
           },
         );
@@ -55,11 +63,10 @@ class BuysPage extends StatelessWidget {
   }
 
   void _showAddBuyDialog(BuildContext context, BuysController controller) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     String selectedSupplierId =
         controller.suppliers.isNotEmpty ? controller.suppliers.first.id : '';
     List<BuyDetail> details = [];
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -89,95 +96,12 @@ class BuysPage extends StatelessWidget {
               setState(() {});
             }
 
-            void showAddProductDialog() {
-              final nameController = TextEditingController();
-              final barcodeController = TextEditingController();
-              final priceController = TextEditingController();
-              final stockController = TextEditingController();
-              String selectedCategoryId = controller.categories.isNotEmpty
-                  ? controller.categories.first.id
-                  : '';
-
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Añadir Producto'),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          TextField(
-                            controller: nameController,
-                            decoration:
-                                const InputDecoration(labelText: 'Nombre'),
-                          ),
-                          TextField(
-                            controller: barcodeController,
-                            decoration: const InputDecoration(
-                                labelText: 'Código de barras'),
-                          ),
-                          TextField(
-                            controller: priceController,
-                            decoration: const InputDecoration(
-                                labelText: 'Precio de venta'),
-                            keyboardType: TextInputType.number,
-                          ),
-                          TextField(
-                            controller: stockController,
-                            decoration:
-                                const InputDecoration(labelText: 'Stock'),
-                            keyboardType: TextInputType.number,
-                          ),
-                          DropdownButtonFormField<String>(
-                            decoration:
-                                const InputDecoration(labelText: 'Categoría'),
-                            value: selectedCategoryId,
-                            onChanged: (value) {
-                              selectedCategoryId = value!;
-                            },
-                            items: controller.categories.map((category) {
-                              return DropdownMenuItem<String>(
-                                value: category.id,
-                                child: Text(category.name),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Cancelar'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          final product = Product(
-                            id: '',
-                            name: nameController.text,
-                            barcode: barcodeController.text,
-                            price: double.tryParse(priceController.text) ?? 0.0,
-                            stock: int.tryParse(stockController.text) ?? 0,
-                            category: selectedCategoryId,
-                          );
-                          controller.addProduct(product);
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Añadir'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
-
             return AlertDialog(
-              title: const Text('Agregar Compra'),
+              title: const Text('Agregar compra',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               content: SingleChildScrollView(
                 child: Form(
-                  key: _formKey,
+                  key: formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
@@ -197,13 +121,23 @@ class BuysPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStateProperty.all(Colors.blue)),
                         onPressed: addDetail,
-                        child: const Text('Agregar Producto'),
+                        child: const Text('Agregar Producto',
+                            style: TextStyle(color: Colors.white)),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: showAddProductDialog,
-                        child: const Text('Añadir Nuevo Producto'),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStateProperty.all(Colors.blue)),
+                        onPressed: () {
+                          showAddProductDialog(context, controller);
+                        },
+                        child: const Text('Añadir Nuevo Producto',
+                            style: TextStyle(color: Colors.white)),
                       ),
                       const SizedBox(height: 10),
                       SingleChildScrollView(
@@ -285,15 +219,19 @@ class BuysPage extends StatelessWidget {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Cancelar'),
+                  child: const Text('Cancelar',
+                      style: TextStyle(color: Colors.grey)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
-                TextButton(
-                  child: const Text('Guardar'),
+                ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.blue)),
+                  child: const Text('Guardar',
+                      style: TextStyle(color: Colors.white)),
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
+                    if (formKey.currentState!.validate()) {
                       double totalCost = details.fold(
                           0.0, (sum, detail) => sum + detail.totalCost);
                       Buy newBuy = Buy(
@@ -311,6 +249,90 @@ class BuysPage extends StatelessWidget {
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  void showAddProductDialog(BuildContext context, BuysController controller) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Añadir producto',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                CustomTextField(
+                  controller: controller.nameController,
+                  labelText: 'Nombre',
+                ),
+                CustomTextField(
+                  controller: controller.barcodeController,
+                  labelText: 'Código de barras',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.qr_code),
+                    onPressed: () => controller.scanMobile(context),
+                  ),
+                ),
+                CustomTextField(
+                  controller: controller.priceController,
+                  labelText: 'Precio de Venta',
+                  keyboardType: TextInputType.number,
+                ),
+                CustomTextField(
+                  controller: controller.stockController,
+                  labelText: 'Stock',
+                  keyboardType: TextInputType.number,
+                ),
+                CustomDropdownButton<String>(
+                  labelText: 'Categoría',
+                  value: controller.selectedCategoryId,
+                  items: controller.categories.map((category) {
+                    return DropdownMenuItem<String>(
+                      value: category.id,
+                      child: Text(category.name),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    controller.selectedCategoryId = value!;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child:
+                  const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.blue)),
+              onPressed: () {
+                final product = Product(
+                  id: '',
+                  name: controller.nameController.text,
+                  barcode: controller.barcodeController.text,
+                  price:
+                      double.tryParse(controller.priceController.text) ?? 0.0,
+                  stock: int.tryParse(controller.stockController.text) ?? 0,
+                  category: controller.selectedCategoryId,
+                );
+                controller.addProduct(product);
+                controller.clearFields();
+                Navigator.of(context).pop();
+              },
+              child:
+                  const Text('Añadir', style: TextStyle(color: Colors.white)),
+            ),
+          ],
         );
       },
     );
