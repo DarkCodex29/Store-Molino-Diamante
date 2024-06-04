@@ -24,7 +24,7 @@ class HomePageState extends State<HomePage> {
     const ProductsPage(),
     const SalesPage(),
     const BuysPage(),
-    const SuppliersPage(), 
+    const SuppliersPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -39,8 +39,11 @@ class HomePageState extends State<HomePage> {
       appBar: CustomAppBar(
         context: context,
       ),
-      body: Center(
-        child: _pages[_selectedIndex],
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Center(
+          child: _pages[_selectedIndex],
+        ),
       ),
       backgroundColor: Colors.white,
       bottomNavigationBar: Container(

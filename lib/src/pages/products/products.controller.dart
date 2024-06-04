@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:store_molino_diamante/src/models/product.dart';
 import 'package:store_molino_diamante/src/models/product.category.dart';
 import 'package:store_molino_diamante/src/models/supplier.dart';
@@ -9,12 +12,75 @@ class ProductsController extends GetxController {
   var categories = <ProductCategory>[].obs;
   var isLoading = false.obs;
 
+  final nameController = TextEditingController();
+  final barcodeController = TextEditingController();
+  final priceController = TextEditingController();
+  final stockController = TextEditingController();
+  String selectedCategoryId = '';
+
   @override
   void onInit() {
     super.onInit();
     fetchProducts();
     fetchSuppliers();
     fetchCategories();
+  }
+
+  Future scanMobile(BuildContext context) async {
+    final scanResult = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SimpleBarcodeScannerPage(
+          lineColor: "#ff6666",
+          cancelButtonText: "Cancelar",
+          isShowFlashIcon: true,
+        ),
+      ),
+    );
+
+    if (scanResult == null || scanResult == '-1') {
+      Get.snackbar(
+        'Advertencia',
+        'El escaneo fue cancelado.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(milliseconds: 1500),
+      );
+      return;
+    }
+
+    Product? existingProduct = await getProductByBarcode(scanResult);
+    if (existingProduct != null) {
+      Get.snackbar(
+        'Advertencia',
+        'El código de barras $scanResult ya está asignado al producto ${existingProduct.name}.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(milliseconds: 1500),
+      );
+      return;
+    }
+    barcodeController.text = scanResult;
+  }
+
+  Future<Product?> getProductByBarcode(String barcode) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('products')
+        .where('barcode', isEqualTo: barcode)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return Product.fromJson(querySnapshot.docs.first.data());
+    }
+    return null;
+  }
+
+  void clearFields() {
+    nameController.clear();
+    barcodeController.clear();
+    priceController.clear();
+    stockController.clear();
+    selectedCategoryId = '';
   }
 
   void fetchProducts() async {

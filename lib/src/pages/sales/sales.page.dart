@@ -25,20 +25,59 @@ class SalesPage extends StatelessWidget {
           itemCount: controller.sales.length,
           itemBuilder: (context, index) {
             final sale = controller.sales[index];
-            final saleNumber = controller.sales.length -
-                index; // Adjusted to show the correct order
+            final saleNumber = controller.sales.length - index;
+            final totalPrice = sale.details.fold(
+                0.0, (sum, detail) => sum + detail.price * detail.quantity);
             final saleDetails = sale.details.map((detail) {
               final product = controller.getProductById(detail.productId);
-              return 'Producto: ${product.name}, Cantidad: ${detail.quantity}, Precio: S/. ${detail.price.toStringAsFixed(2)}';
-            }).join('\n');
-            return ListTile(
-              title: Text('Venta: $saleNumber'),
-              subtitle: Text(saleDetails),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  controller.deleteSale(sale.id);
-                },
+              return Text(
+                'Producto: ${product.name}, Cantidad: ${detail.quantity}, Precio: S/. ${detail.price.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 14),
+              );
+            }).toList();
+
+            return Card(
+              color: Colors.grey[100],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Colors.blue, width: 1)),
+              child: ExpansionTile(
+                backgroundColor: Colors.grey[100],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: const BorderSide(color: Colors.blue, width: 1)),
+                title: Text('Venta: $saleNumber',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+                subtitle:
+                    Text('Precio Total: S/. ${totalPrice.toStringAsFixed(2)}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    controller.deleteSale(sale.id);
+                  },
+                ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                            'Fecha: ${sale.date.toLocal().toString().split(' ')[0]}',
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                        const Text('Productos:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        ...saleDetails,
+                        Text('Cantidad de productos: ${sale.details.length}',
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           },
